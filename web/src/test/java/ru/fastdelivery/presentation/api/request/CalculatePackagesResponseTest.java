@@ -40,5 +40,4 @@ class CalculatePackagesResponseTest {
                 .withComparatorForType(BigDecimalComparator.BIG_DECIMAL_COMPARATOR, BigDecimal.class)
                 .isEqualTo(expected);
     }
-
 }

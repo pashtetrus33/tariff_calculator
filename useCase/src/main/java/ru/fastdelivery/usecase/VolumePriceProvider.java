@@ -2,9 +2,8 @@ package ru.fastdelivery.usecase;
 
 import ru.fastdelivery.domain.common.price.Price;
 
-public interface WeightPriceProvider {
-
-    Price costPerKg();
+public interface VolumePriceProvider {
+    Price costPerCubeM();
 
     Price minimalPrice();
 }
