@@ -7,6 +7,9 @@ import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import ru.fastdelivery.ControllerTest;
 import ru.fastdelivery.domain.common.currency.CurrencyFactory;
+import ru.fastdelivery.domain.common.distance.Coordinates;
+import ru.fastdelivery.domain.common.distance.Latitude;
+import ru.fastdelivery.domain.common.distance.Longitude;
 import ru.fastdelivery.domain.common.length.LengthNormalizer;
 import ru.fastdelivery.domain.common.price.Price;
 import ru.fastdelivery.presentation.api.request.CalculatePackagesRequest;
@@ -37,7 +40,9 @@ class CalculateControllerTest extends ControllerTest {
     @DisplayName("Валидные данные для расчета стоимость -> Ответ 200")
     void whenValidInputData_thenReturn200() {
         var request = new CalculatePackagesRequest(
-                List.of(new CargoPackage(BigInteger.TEN, BigInteger.TEN, BigInteger.TEN, BigInteger.TEN)), "RUB");
+                List.of(new CargoPackage(BigInteger.TEN, BigInteger.TEN, BigInteger.TEN, BigInteger.TEN)),
+                "RUB", new Coordinates(new Latitude(73.398660), new Longitude(55.027532)),
+                new Coordinates(new Latitude(55.446008), new Longitude(65.339151)));
         var rub = new CurrencyFactory(code -> true).create("RUB");
         when(useCase.calc(any())).thenReturn(new Price(BigDecimal.valueOf(10), rub));
         when(useCase.minimalPrice()).thenReturn(new Price(BigDecimal.valueOf(5), rub));
@@ -51,7 +56,10 @@ class CalculateControllerTest extends ControllerTest {
     @Test
     @DisplayName("Список упаковок == null -> Ответ 400")
     void whenEmptyListPackages_thenReturn400() {
-        var request = new CalculatePackagesRequest(null, "RUB");
+        var request = new CalculatePackagesRequest(
+                List.of(new CargoPackage(BigInteger.TEN, BigInteger.TEN, BigInteger.TEN, BigInteger.TEN)),
+                "RUB", new Coordinates(new Latitude(73.398660), new Longitude(55.027532)),
+                new Coordinates(new Latitude(55.446008), new Longitude(65.339151)));
 
         ResponseEntity<String> response = restTemplate.postForEntity(baseCalculateApi, request, String.class);
 
@@ -62,7 +70,9 @@ class CalculateControllerTest extends ControllerTest {
     @DisplayName("Список упаковок == null -> Ответ 400")
     void whenWeightIsNullInPackage_thenReturn400() {
         var request = new CalculatePackagesRequest(
-                List.of(new CargoPackage(null, BigInteger.TEN, BigInteger.TEN, BigInteger.TEN)), "RUB");
+                List.of(new CargoPackage(BigInteger.TEN, BigInteger.TEN, BigInteger.TEN, BigInteger.TEN)),
+                "RUB", new Coordinates(new Latitude(73.398660), new Longitude(55.027532)),
+                new Coordinates(new Latitude(55.446008), new Longitude(65.339151)));
         ResponseEntity<String> response = restTemplate.postForEntity(baseCalculateApi, request, String.class);
 
         assertEquals(HttpStatus.BAD_REQUEST, response.getStatusCode());
@@ -71,8 +81,12 @@ class CalculateControllerTest extends ControllerTest {
     @Test
     @DisplayName("Список упаковок == null -> Ответ 400")
     void whenLengthIsNullInPackage_thenReturn400() {
+
         var request = new CalculatePackagesRequest(
-                List.of(new CargoPackage(BigInteger.TEN, null, BigInteger.TEN, BigInteger.TEN)), "RUB");
+                List.of(new CargoPackage(BigInteger.TEN, BigInteger.TEN, BigInteger.TEN, BigInteger.TEN)),
+                "RUB", new Coordinates(new Latitude(73.398660), new Longitude(55.027532)),
+                new Coordinates(new Latitude(55.446008), new Longitude(65.339151)));
+
         ResponseEntity<String> response = restTemplate.postForEntity(baseCalculateApi, request, String.class);
 
         assertEquals(HttpStatus.BAD_REQUEST, response.getStatusCode());
@@ -81,8 +95,12 @@ class CalculateControllerTest extends ControllerTest {
     @Test
     @DisplayName("Список упаковок == null -> Ответ 400")
     void whenWidthIsNullInPackage_thenReturn400() {
+
         var request = new CalculatePackagesRequest(
-                List.of(new CargoPackage(BigInteger.TEN, BigInteger.TEN, null, BigInteger.TEN)), "RUB");
+                List.of(new CargoPackage(BigInteger.TEN, BigInteger.TEN, BigInteger.TEN, BigInteger.TEN)),
+                "RUB", new Coordinates(new Latitude(73.398660), new Longitude(55.027532)),
+                new Coordinates(new Latitude(55.446008), new Longitude(65.339151)));
+
         ResponseEntity<String> response = restTemplate.postForEntity(baseCalculateApi, request, String.class);
 
         assertEquals(HttpStatus.BAD_REQUEST, response.getStatusCode());
@@ -91,8 +109,12 @@ class CalculateControllerTest extends ControllerTest {
     @Test
     @DisplayName("Список упаковок == null -> Ответ 400")
     void whenHeightIsNullInPackage_thenReturn400() {
+
         var request = new CalculatePackagesRequest(
-                List.of(new CargoPackage(BigInteger.TEN, BigInteger.TEN, BigInteger.TEN, null)), "RUB");
+                List.of(new CargoPackage(BigInteger.TEN, BigInteger.TEN, BigInteger.TEN, BigInteger.TEN)),
+                "RUB", new Coordinates(new Latitude(73.398660), new Longitude(55.027532)),
+                new Coordinates(new Latitude(55.446008), new Longitude(65.339151)));
+
         ResponseEntity<String> response = restTemplate.postForEntity(baseCalculateApi, request, String.class);
 
         assertEquals(HttpStatus.BAD_REQUEST, response.getStatusCode());

@@ -11,8 +11,12 @@ import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 import ru.fastdelivery.domain.common.currency.CurrencyFactory;
+import ru.fastdelivery.domain.common.distance.Coordinates;
+import ru.fastdelivery.domain.common.distance.Latitude;
+import ru.fastdelivery.domain.common.distance.Longitude;
 import ru.fastdelivery.domain.common.length.Length;
 import ru.fastdelivery.domain.common.weight.Weight;
+import ru.fastdelivery.domain.config.CoordinateProperties;
 import ru.fastdelivery.domain.delivery.pack.Pack;
 import ru.fastdelivery.domain.delivery.shipment.Shipment;
 import ru.fastdelivery.presentation.api.request.CalculatePackagesRequest;
@@ -25,23 +29,27 @@ import ru.fastdelivery.usecase.TariffCalculateUseCase;
 @RequiredArgsConstructor
 @Tag(name = "Расчеты стоимости доставки")
 public class CalculateController {
+
     private final TariffCalculateUseCase tariffCalculateUseCase;
     private final CurrencyFactory currencyFactory;
+    private final CoordinateProperties coordinateProperties; // Инъекция CoordinateProperties
 
     @PostMapping
     @Operation(summary = "Расчет стоимости по упаковкам груза")
     @ApiResponses(value = {
-            @ApiResponse(responseCode = "200", description = "Successful operation"),
-            @ApiResponse(responseCode = "400", description = "Invalid input provided")
+            @ApiResponse(responseCode = "200", description = "Успешная операция"),
+            @ApiResponse(responseCode = "400", description = "Предоставлен некорректный ввод")
     })
     public CalculatePackagesResponse calculate(
             @Valid @RequestBody CalculatePackagesRequest request) {
         // Преобразуем запрос в список упаковок
         var packs = request.packages().stream()
-                .map(this::mapToPack)
+                .map(this::mapToPack) // Преобразование каждой упаковки
                 .toList();
 
-        var shipment = new Shipment(packs, currencyFactory.create(request.currencyCode()));
+
+        // Создание отправления и расчет стоимости
+        var shipment = new Shipment(packs, currencyFactory.create(request.currencyCode()), request.destination(), request.departure());
         var calculatedPrice = tariffCalculateUseCase.calc(shipment);
         var minimalPrice = tariffCalculateUseCase.minimalPrice();
 
@@ -50,11 +58,12 @@ public class CalculateController {
 
     // Метод для преобразования CargoPackage в Pack
     private Pack mapToPack(CargoPackage cargoPackage) {
-        Weight weight = new Weight(cargoPackage.weight());
-        Length length = new Length(cargoPackage.length());
-        Length width = new Length(cargoPackage.width());
-        Length height = new Length(cargoPackage.height());
-
-        return new Pack(weight, length, width, height);
+        // Создание упаковки из CargoPackage
+        return new Pack(
+                new Weight(cargoPackage.weight()),
+                new Length(cargoPackage.length()),
+                new Length(cargoPackage.width()),
+                new Length(cargoPackage.height())
+        );
     }
 }
