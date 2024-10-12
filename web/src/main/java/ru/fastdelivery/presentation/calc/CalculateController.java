@@ -11,12 +11,8 @@ import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 import ru.fastdelivery.domain.common.currency.CurrencyFactory;
-import ru.fastdelivery.domain.common.distance.Coordinates;
-import ru.fastdelivery.domain.common.distance.Latitude;
-import ru.fastdelivery.domain.common.distance.Longitude;
 import ru.fastdelivery.domain.common.length.Length;
 import ru.fastdelivery.domain.common.weight.Weight;
-import ru.fastdelivery.domain.config.CoordinateProperties;
 import ru.fastdelivery.domain.delivery.pack.Pack;
 import ru.fastdelivery.domain.delivery.shipment.Shipment;
 import ru.fastdelivery.presentation.api.request.CalculatePackagesRequest;
@@ -32,7 +28,6 @@ public class CalculateController {
 
     private final TariffCalculateUseCase tariffCalculateUseCase;
     private final CurrencyFactory currencyFactory;
-    private final CoordinateProperties coordinateProperties; // Инъекция CoordinateProperties
 
     @PostMapping
     @Operation(summary = "Расчет стоимости по упаковкам груза")
@@ -41,7 +36,7 @@ public class CalculateController {
             @ApiResponse(responseCode = "400", description = "Предоставлен некорректный ввод")
     })
     public CalculatePackagesResponse calculate(
-            @Valid @RequestBody CalculatePackagesRequest request) {
+             @RequestBody CalculatePackagesRequest request) {
         // Преобразуем запрос в список упаковок
         var packs = request.packages().stream()
                 .map(this::mapToPack) // Преобразование каждой упаковки

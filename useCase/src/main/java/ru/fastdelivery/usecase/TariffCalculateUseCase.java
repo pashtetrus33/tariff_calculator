@@ -1,6 +1,8 @@
 package ru.fastdelivery.usecase;
 
+import lombok.Getter;
 import lombok.RequiredArgsConstructor;
+import lombok.Setter;
 import org.springframework.beans.factory.annotation.Value;
 import ru.fastdelivery.domain.common.price.Price;
 import ru.fastdelivery.domain.delivery.shipment.Shipment;
@@ -17,6 +19,7 @@ public class TariffCalculateUseCase {
     private final VolumePriceProvider volumePriceProvider;
 
     @Value("${app.baseDistanceTariff}")
+    @Setter
     private int baseDistanceTariff;
 
     public Price calc(Shipment shipment) {

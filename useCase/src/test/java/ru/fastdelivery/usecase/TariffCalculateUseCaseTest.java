@@ -6,6 +6,9 @@ import org.junit.jupiter.api.Test;
 import org.springframework.boot.test.context.SpringBootTest;
 import ru.fastdelivery.domain.common.currency.Currency;
 import ru.fastdelivery.domain.common.currency.CurrencyFactory;
+import ru.fastdelivery.domain.common.distance.Coordinates;
+import ru.fastdelivery.domain.common.distance.Latitude;
+import ru.fastdelivery.domain.common.distance.Longitude;
 import ru.fastdelivery.domain.common.length.Length;
 import ru.fastdelivery.domain.common.price.Price;
 import ru.fastdelivery.domain.common.weight.Weight;
@@ -29,12 +32,20 @@ class TariffCalculateUseCaseTest {
     final TariffCalculateUseCase tariffCalculateUseCase = new TariffCalculateUseCase(weightPriceProvider,
             volumePriceProvider);
 
+
+
     @Test
     @DisplayName("Расчет стоимости доставки -> успешно")
     void whenCalculatePrice_thenSuccessWithVolumeCalculation() {
         var minimalPrice = new Price(BigDecimal.TEN, currency);
         var pricePerKg = new Price(BigDecimal.valueOf(100), currency);
         var pricePerCubeM = new Price(BigDecimal.valueOf(200), currency);
+
+        double lat1 = 55.7558; // Москва
+        double lon1 = 37.6173;
+        double lat2 = 56.1290; // Владимир
+        double lon2 = 40.4053;
+
 
         when(weightPriceProvider.minimalPrice()).thenReturn(minimalPrice);
         when(weightPriceProvider.costPerKg()).thenReturn(pricePerKg);
@@ -44,8 +55,13 @@ class TariffCalculateUseCaseTest {
                 new Length(BigInteger.valueOf(1_000)),
                 new Length(BigInteger.valueOf(1_000)),
                 new Length(BigInteger.valueOf(1_000)))),
-                new CurrencyFactory(code -> true).create("RUB"));
-        var expectedPrice = new Price(BigDecimal.valueOf(200), currency);
+                new CurrencyFactory(code -> true).create("RUB"),
+                new Coordinates(new Latitude(lat1), new Longitude(lon1)),
+                new Coordinates(new Latitude(lat2), new Longitude(lon2)));
+
+        var expectedPrice = new Price(BigDecimal.valueOf(240), currency);
+
+        tariffCalculateUseCase.setBaseDistanceTariff(150);
 
         var actualPrice = tariffCalculateUseCase.calc(shipment);
 
@@ -61,16 +77,26 @@ class TariffCalculateUseCaseTest {
         var pricePerKg = new Price(BigDecimal.valueOf(100), currency);
         var pricePerCubeM = new Price(BigDecimal.valueOf(200), currency);
 
+        double lat1 = 55.7558; // Москва
+        double lon1 = 37.6173;
+        double lat2 = 56.1290; // Владимир
+        double lon2 = 40.4053;
+
         when(weightPriceProvider.minimalPrice()).thenReturn(minimalPrice);
         when(weightPriceProvider.costPerKg()).thenReturn(pricePerKg);
         when(volumePriceProvider.costPerCubeM()).thenReturn(pricePerCubeM);
 
         var shipment = new Shipment(List.of(new Pack(new Weight(BigInteger.valueOf(1200)),
-                new Length(BigInteger.valueOf(1_00)),
-                new Length(BigInteger.valueOf(1_00)),
-                new Length(BigInteger.valueOf(1_00)))),
-                new CurrencyFactory(code -> true).create("RUB"));
-        var expectedPrice = new Price(BigDecimal.valueOf(120), currency);
+                new Length(BigInteger.valueOf(1_000)),
+                new Length(BigInteger.valueOf(1_000)),
+                new Length(BigInteger.valueOf(1_000)))),
+                new CurrencyFactory(code -> true).create("RUB"),
+                new Coordinates(new Latitude(lat1), new Longitude(lon1)),
+                new Coordinates(new Latitude(lat2), new Longitude(lon2)));
+
+        var expectedPrice = new Price(BigDecimal.valueOf(240), currency);
+
+        tariffCalculateUseCase.setBaseDistanceTariff(150);
 
         var actualPrice = tariffCalculateUseCase.calc(shipment);
 

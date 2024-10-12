@@ -12,7 +12,7 @@ import java.io.IOException;
 import static org.junit.jupiter.api.Assertions.*;
 import static org.mockito.Mockito.when;
 
-class LongitudeDeserializerTests {
+class LongitudeDeserializerTest {
 
     private LongitudeDeserializer deserializer;
     private double min;

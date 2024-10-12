@@ -2,6 +2,7 @@ package ru.fastdelivery.domain.common.distance;
 
 import com.fasterxml.jackson.core.JsonParser;
 import com.fasterxml.jackson.databind.DeserializationContext;
+import com.fasterxml.jackson.databind.ObjectMapper;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.mockito.Mockito;
@@ -11,7 +12,7 @@ import java.io.IOException;
 import static org.junit.jupiter.api.Assertions.*;
 import static org.mockito.Mockito.when;
 
-class LatitudeDeserializerTests {
+class LatitudeDeserializerTest {
 
     private LatitudeDeserializer deserializer;
     private double min;

@@ -4,9 +4,14 @@ package ru.fastdelivery.domain.common.distance;
 import com.fasterxml.jackson.annotation.JsonCreator;
 import com.fasterxml.jackson.annotation.JsonProperty;
 import com.fasterxml.jackson.databind.annotation.JsonDeserialize;
+import com.fasterxml.jackson.databind.annotation.JsonSerialize;
+import org.springframework.scheduling.annotation.Scheduled;
+
+import java.io.Serializable;
 
 @JsonDeserialize(using = LongitudeDeserializer.class)
-public record Longitude(double value) implements Comparable<Longitude> {
+@JsonSerialize(using = LongitudeSerializer.class)
+public record Longitude(double value) implements Comparable<Longitude>, Serializable {
 
     @JsonCreator
     public static Longitude fromValues(

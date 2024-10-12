@@ -3,9 +3,13 @@ package ru.fastdelivery.domain.common.distance;
 import com.fasterxml.jackson.annotation.JsonCreator;
 import com.fasterxml.jackson.annotation.JsonProperty;
 import com.fasterxml.jackson.databind.annotation.JsonDeserialize;
+import com.fasterxml.jackson.databind.annotation.JsonSerialize;
+
+import java.io.Serializable;
 
 @JsonDeserialize(using = LatitudeDeserializer.class)
-public record Latitude(double value) implements Comparable<Latitude> {
+@JsonSerialize(using = LatitudeSerializer.class)
+public record Latitude(double value) implements Comparable<Latitude>, Serializable {
 
 
     @JsonCreator
